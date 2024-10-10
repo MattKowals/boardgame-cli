@@ -3,6 +3,7 @@ package org.example;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.example.dao.BoardGameDao;
+import org.example.dao.JdbcBoardGameDao;
 import org.example.view.Menu;
 
 import javax.sql.DataSource;
@@ -13,23 +14,27 @@ public class BoardGameCLI {
     private Menu menu;
     private BoardGameDao boardGameDao;
 
-    private Scanner input;
+    private Scanner userInput = new Scanner(System.in);
 
-    public BoardGameCLI(Menu menu) {
+    public BoardGameCLI(DataSource dataSource, Menu menu) {
+        boardGameDao = new JdbcBoardGameDao(dataSource);
         this.menu = menu;
     }
 
-    public BoardGameCLI(DataSource dataSource) {
-        input = new Scanner(System.in);
-    }
 
+    // makes ApplicationCLI runnable
     public static void main(String[] args) {
+        Menu menu = new Menu();
+
+
+        // Connect to database
         BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setUrl("jdbc:postgresql://localhost:5432/boardgame_db");
+        dataSource.setUrl("jdbc:postgresql://localhost:5432/boardgames_db");
         dataSource.setUsername("postgres");
-        dataSource.setPassword("postgres1");
-        BoardGameCLI app = new BoardGameCLI(dataSource);
-        app.run();
+        dataSource.setPassword("Beta150@");   // TODO: 10/10/2024 Hide password
+
+        BoardGameCLI cli = new BoardGameCLI(dataSource, menu);
+        cli.run();
     }
 
 
@@ -47,6 +52,8 @@ public class BoardGameCLI {
             String userSelection = menu.showMainMenu();
             if (userSelection.equals("1")) {
                 System.out.println("Selected 1 - Show board games");
+                displayGameCount();
+                displayGameNames();
             } else if (userSelection.equals("2")) {
                 System.out.println("Selected 2 - Add game");
             } else if (userSelection.equals("3")) {
@@ -59,13 +66,17 @@ public class BoardGameCLI {
 
     }
 
-
-
-    // makes ApplicationCLI runnable
-    public static void main(String[] args) {
-        Menu menu = new Menu();
-        BoardGameCLI cli = new BoardGameCLI(menu);
-        cli.run();
+    private void displayGameCount() {
+        System.out.println("Number of games: " + boardGameDao.getGameCount());
+        System.out.println();
     }
+
+    private void displayGameNames() {
+        System.out.println("Games in your collection: ");
+        for (String name : boardGameDao.getGameNames()) {
+            System.out.println(name);
+        }
+    }
+
 
 }

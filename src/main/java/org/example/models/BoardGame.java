@@ -10,7 +10,7 @@ public class BoardGame {
     public int year_published;
     public Date date_purchased;
     public double price;
-    public int time_to_teach_in_minute;
+    public int time_to_teach_in_minutes;
     public int time_to_play_in_minutes_min;
     public int time_to_play_in_minutes_max;
     public int min_players;
@@ -22,7 +22,7 @@ public class BoardGame {
     // Constructor
     public BoardGame(int game_id, String name, String publisher,
                      int year_published, Date date_purchased,
-                     double price, int time_to_teach_in_minute,
+                     double price, int time_to_teach_in_minutes,
                      int time_to_play_in_minutes_min,
                      int time_to_play_in_minutes_max, int min_players,
                      int max_players, boolean expansion,
@@ -33,7 +33,7 @@ public class BoardGame {
         this.year_published = year_published;
         this.date_purchased = date_purchased;
         this.price = price;
-        this.time_to_teach_in_minute = time_to_teach_in_minute;
+        this.time_to_teach_in_minutes = time_to_teach_in_minutes;
         this.time_to_play_in_minutes_min = time_to_play_in_minutes_min;
         this.time_to_play_in_minutes_max = time_to_play_in_minutes_max;
         this.min_players = min_players;
@@ -96,12 +96,12 @@ public class BoardGame {
         this.price = price;
     }
 
-    public int getTime_to_teach_in_minute() {
-        return time_to_teach_in_minute;
+    public int getTime_to_teach_in_minutes() {
+        return time_to_teach_in_minutes;
     }
 
-    public void setTime_to_teach_in_minute(int time_to_teach_in_minute) {
-        this.time_to_teach_in_minute = time_to_teach_in_minute;
+    public void setTime_to_teach_in_minutes(int time_to_teach_in_minute) {
+        this.time_to_teach_in_minutes = time_to_teach_in_minute;
     }
 
     public int getTime_to_play_in_minutes_min() {
