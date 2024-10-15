@@ -1,5 +1,6 @@
 package org.example.models;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class BoardGame {
@@ -8,7 +9,7 @@ public class BoardGame {
     public String name;
     public String publisher;
     public int year_published;
-    public Date date_purchased;
+    public LocalDate date_purchased;
     public double price;
     public int time_to_teach_in_minutes;
     public int time_to_play_in_minutes_min;
@@ -21,7 +22,7 @@ public class BoardGame {
 
     // Constructor
     public BoardGame(int game_id, String name, String publisher,
-                     int year_published, Date date_purchased,
+                     int year_published, LocalDate date_purchased,
                      double price, int time_to_teach_in_minutes,
                      int time_to_play_in_minutes_min,
                      int time_to_play_in_minutes_max, int min_players,
@@ -80,11 +81,11 @@ public class BoardGame {
         this.year_published = year_published;
     }
 
-    public Date getDate_purchased() {
+    public LocalDate getDate_purchased() {
         return date_purchased;
     }
 
-    public void setDate_purchased(Date date_purchased) {
+    public void setDate_purchased(LocalDate date_purchased) {
         this.date_purchased = date_purchased;
     }
 

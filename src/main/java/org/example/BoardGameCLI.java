@@ -4,9 +4,13 @@ package org.example;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.example.dao.BoardGameDao;
 import org.example.dao.JdbcBoardGameDao;
+import org.example.models.BoardGame;
 import org.example.view.Menu;
 
 import javax.sql.DataSource;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class BoardGameCLI {
@@ -56,6 +60,7 @@ public class BoardGameCLI {
                 displayGameNames();
             } else if (userSelection.equals("2")) {
                 System.out.println("Selected 2 - Add game");
+                addNewGame();
             } else if (userSelection.equals("3")) {
                 System.out.println("Selected 3 - Delete game");
             } else if (userSelection.equals("4")) {
@@ -78,5 +83,124 @@ public class BoardGameCLI {
         }
     }
 
+    private void addNewGame() {
+        BoardGame newBoarGame = promptForNewGameData();
+        newBoarGame = boardGameDao.addBoardGame(newBoarGame);
+    }
+
+    private BoardGame promptForNewGameData() {
+        BoardGame newGame = new BoardGame();
+        String newName = "";
+            while (newName.isBlank()) {
+                newName = promptForString("Game name: ");
+            }
+            newGame.setName(newName);
+        String newPublisher = "";
+            while (newPublisher.isBlank()) {
+                newPublisher = promptForString("Publisher: ");
+            }
+            newGame.setPublisher(newPublisher);
+        int newYear = 0;
+            while (newYear == 0) {
+                newYear = promptForInt("Year game released: ");
+            }
+            newGame.setYear_published(newYear);
+        LocalDate newDatePurchased = null;
+            while (newDatePurchased == null) {
+                newDatePurchased = promptForDate("Date purchased (YYYY-MM-DD): ");
+            }
+            newGame.setDate_purchased(newDatePurchased);
+        double newPrice = -1;
+            while (newPrice == -1) {
+                newPrice = promptForDouble("Price: ");
+            }
+            newGame.setPrice(newPrice);
+        int newTimeToTeach = -1;
+            while (newTimeToTeach == -1) {
+                newTimeToTeach = promptForInt("Time to teach game (in minutes): ");
+            }
+            newGame.setTime_to_teach_in_minutes(newTimeToTeach);
+        int newMinTimeToPlay = -1;
+            while (newMinTimeToPlay == -1) {
+                newMinTimeToPlay = promptForInt("Minimum gameplay time (in minutes): ");
+            }
+            newGame.setTime_to_play_in_minutes_min(newMinTimeToPlay);
+        int newMaxTimeToPlay = -1;
+            while (newMaxTimeToPlay == -1) {
+                newMaxTimeToPlay = promptForInt("Maximum gameplay time (in minutes) :");
+            }
+            newGame.setTime_to_play_in_minutes_max(newMaxTimeToPlay);
+        int newMinPlayers = -1;
+            while (newMinPlayers == -1) {
+                newMinPlayers = promptForInt("Minimum number of players: ");
+            }
+            newGame.setMin_players(newMinPlayers);
+        int newMaxPlayers = -1;
+            while (newMaxPlayers == -1) {
+                newMaxPlayers = promptForInt("Maximum number of players: ");
+            }
+        boolean isExpansion = false;
+            String yes_or_no = promptForString("Is this game an expansion (yes/no): ").toLowerCase();
+            if (yes_or_no.equals("yes")) {
+                isExpansion = true;
+                newGame.setExpansion(isExpansion);
+            } else newGame.setExpansion(isExpansion);
+        String newDescription = "";
+            while (newDescription == "") {
+                newDescription = promptForString("Game description: ");
+            }
+            newGame.setDescription(newDescription);
+
+
+        return newGame;
+    }
+
+    // Methods for converting answers to data
+
+    private String promptForString(String prompt) {
+        System.out.println(prompt);
+        return userInput.nextLine();
+    }
+
+    private double promptForDouble(String prompt) {
+        while (true) {
+            System.out.println(prompt);
+            String response = userInput.nextLine();
+            try {
+                return Double.parseDouble(response);
+            } catch (NumberFormatException e) {
+                if (response.isBlank()) {
+                    return -1;
+                } else {
+                    displayError("Numbers only");
+                }
+            }
+        }
+    }
+
+    private int promptForInt(String prompt) {
+        return (int) promptForDouble(prompt);
+    }
+
+    private LocalDate promptForDate(String prompt) {
+        while (true) {
+            System.out.println(prompt);
+            String response = userInput.nextLine();
+            try {
+                return LocalDate.parse(response);
+            } catch (DateTimeParseException e) {
+                if (response.isBlank()) {
+                    return null;
+                } else {
+                    displayError("Enter date as YYYY-MM-DD");
+                }
+            }
+        }
+    }
+
+    private void displayError(String message) {
+        System.out.println();
+        System.out.println(message);
+    }
 
 }

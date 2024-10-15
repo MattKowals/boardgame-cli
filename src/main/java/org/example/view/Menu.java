@@ -24,6 +24,7 @@ public class Menu {
         System.out.println("2. Add Board Game");
         System.out.println("3. Delete Board Game");
         System.out.println("4. Quit");
+        System.out.println("-->");
         return userInput.nextLine();
     }
 
