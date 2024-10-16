@@ -12,4 +12,6 @@ public interface BoardGameDao {
     List<BoardGame> getBoardGames();
 
     BoardGame addBoardGame(BoardGame boardGame);
+
+    int deleteGameByName(String name);
 }

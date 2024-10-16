@@ -63,6 +63,8 @@ public class BoardGameCLI {
                 addNewGame();
             } else if (userSelection.equals("3")) {
                 System.out.println("Selected 3 - Delete game");
+                promptForDeleteGame();
+
             } else if (userSelection.equals("4")) {
                 break;
             }
@@ -80,6 +82,15 @@ public class BoardGameCLI {
         System.out.println("Games in your collection: ");
         for (String name : boardGameDao.getGameNames()) {
             System.out.println(name);
+        }
+    }
+
+
+    // Method not working, causing error
+    private void displayAllGamesWithInfo() {
+        System.out.println("All games and info: ");
+        for (BoardGame game : boardGameDao.getBoardGames()) {
+            System.out.println(game.name);
         }
     }
 
@@ -154,6 +165,22 @@ public class BoardGameCLI {
 
         return newGame;
     }
+
+
+    private void promptForDeleteGame() {
+        String game_name = promptForString("Enter the name of the game to delete: ");
+        deleteGame(game_name);
+    }
+
+    private void deleteGame(String game_name) {
+        int deletedRows = boardGameDao.deleteGameByName(game_name);
+        if (deletedRows == 0) {
+            displayError("Error in deleting game");
+        } else System.out.println("Game successfully deleted");
+    }
+
+
+
 
     // Methods for converting answers to data
 

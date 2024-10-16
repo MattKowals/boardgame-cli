@@ -29,11 +29,6 @@ public class Menu {
     }
 
 
-    public String showBoardGameList() {
-        System.out.println("list of games");
-        showBoardGameListMenu();
-        return userInput.nextLine();
-    }
 
     public String showBoardGameListMenu() {
         System.out.println("1. Sort by xxx");

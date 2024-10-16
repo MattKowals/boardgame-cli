@@ -34,23 +34,36 @@ public class JdbcBoardGameDao implements BoardGameDao {
 
     @Override
     public List<BoardGame> getBoardGames() {
-        return null;
+        List<BoardGame> gameCollection = new ArrayList<>();
+
+        String sql = "SELECT game_id, game_name, publisher, year_published, date_purchased, price, time_to_teach_in_minutes, " +
+                "time_to_play_in_minutes_min, time_to_play_in_minutes_max, min_players, max_players," +
+                "expansion, description " +
+                "From board_games";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+
+        while (results.next()) {
+            BoardGame boardGame = mapRowToGame(results);
+            gameCollection.add(boardGame);
+        }
+
+        return gameCollection;
     }
 
     @Override
     public List<String> getGameNames() {
         List<String> names = new ArrayList<>();
-        String sql = "SELECT name FROM board_games";
+        String sql = "SELECT game_name FROM board_games";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
         while (results.next()) {
-            names.add(results.getString("name"));
+            names.add(results.getString("game_name"));
         }
         return names;
     }
 
     public BoardGame getGameById(int game_id) {
         BoardGame game = null;
-        String sql = "SELECT game_id, name, publisher, year_published, date_purchased, price, time_to_teach_in_minutes, " +
+        String sql = "SELECT game_id, game_name, publisher, year_published, date_purchased, price, time_to_teach_in_minutes, " +
                 "time_to_play_in_minutes_min, time_to_play_in_minutes_max, min_players, max_players," +
                 "expansion, description " +
                 "FROM board_games WHERE game_id = ?;";
@@ -70,7 +83,7 @@ public class JdbcBoardGameDao implements BoardGameDao {
     @Override
     public BoardGame addBoardGame(BoardGame boardGame) {
         BoardGame newGame = null;
-        String sql = "INSERT into board_games (name, publisher, year_published, date_purchased, price, time_to_teach_in_minutes, " +
+        String sql = "INSERT into board_games (game_name, publisher, year_published, date_purchased, price, time_to_teach_in_minutes, " +
                 "time_to_play_in_minutes_min, time_to_play_in_minutes_max, min_players, max_players," +
                 "expansion, description) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
@@ -95,13 +108,31 @@ public class JdbcBoardGameDao implements BoardGameDao {
     }
 
 
+    @Override
+    public int deleteGameByName(String name) {
+        int numberOfRows = 0;
+        String sql = "DELETE FROM board_games WHERE game_name = ?;";
+        try {
+            numberOfRows = jdbcTemplate.update(sql, name);
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to database", e);
+        } catch (BadSqlGrammarException e) {
+            throw new DaoException("SQL syntax error - Confirm name is exact", e);
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation", e);
+        }
+
+        return numberOfRows;
+    }
+
+
 
 
 
     private BoardGame mapRowToGame(SqlRowSet rowSet) {
         BoardGame boardGame = new BoardGame();
         boardGame.setGame_id(rowSet.getInt("game_id"));
-        boardGame.setName(rowSet.getString("name"));
+        boardGame.setName(rowSet.getString("game_name"));
         boardGame.setPublisher(rowSet.getString("publisher"));
         boardGame.setYear_published(rowSet.getInt("year_published"));
         boardGame.setDate_purchased(rowSet.getDate("date_purchased").toLocalDate());

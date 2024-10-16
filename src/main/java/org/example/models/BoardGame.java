@@ -152,4 +152,45 @@ public class BoardGame {
     public void setDescription(String description) {
         this.description = description;
     }
+
+
+    @Override
+    public String toString() {
+        return "BoardGame{" +
+                "game_id=" + game_id +
+                ", name='" + name + '\'' +
+                ", publisher='" + publisher + '\'' +
+                ", year_published=" + year_published +
+                ", date_purchased=" + date_purchased +
+                ", price=" + price +
+                ", time_to_teach_in_minutes=" + time_to_teach_in_minutes +
+                ", time_to_play_in_minutes_min=" + time_to_play_in_minutes_min +
+                ", time_to_play_in_minutes_max=" + time_to_play_in_minutes_max +
+                ", min_players=" + min_players +
+                ", max_players=" + max_players +
+                ", expansion=" + expansion +
+                ", description='" + description + '\'' +
+                '}';
+    }
+
+//    @Override
+//    public String toString() {
+//        return "BoardGame{" +
+//                "game_id=" + game_id +
+//                ", Name='" + name + '\'' +
+//                ", Publisher='" + publisher + '\'' +
+//                ", Year Published=" + year_published +
+//                ", Date Purchased=" + date_purchased +
+//                ", Price=" + price +
+//                ", Time to teach (minutes)=" + time_to_teach_in_minutes +
+//                ", Minimum time to play (minutes)=" + time_to_play_in_minutes_min +
+//                ", Maximum time to play (minutes)=" + time_to_play_in_minutes_max +
+//                ", Minimum number of players=" + min_players +
+//                ", Maximum number of players=" + max_players +
+//                ", Is this an expansion=" + expansion +
+//                ", Description='" + description + '\'' +
+//                '}';
+//    }
+
+
 }
