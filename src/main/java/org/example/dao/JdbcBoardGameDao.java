@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import javax.sql.DataSource;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -107,7 +108,6 @@ public class JdbcBoardGameDao implements BoardGameDao {
         return newGame;
     }
 
-
     @Override
     public int deleteGameByName(String name) {
         int numberOfRows = 0;
@@ -123,6 +123,173 @@ public class JdbcBoardGameDao implements BoardGameDao {
         }
 
         return numberOfRows;
+    }
+
+    @Override
+    public int updateGameNameByOldName(String oldName, String newName) {
+        int updatedRows = 0;
+        String sql = "UPDATE board_games SET game_name = ? WHERE game_name = ?";
+        try {
+            updatedRows = jdbcTemplate.update(sql, newName, oldName);
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to database", e);
+        }
+        return updatedRows;
+    }
+
+    @Override
+    public int updateGamePublisherByName(String name, String publisher) {
+        int updatedRows = 0;
+        String sql = "UPDATE board_games SET publisher = ? WHERE game_name = ?";
+        try {
+            updatedRows = jdbcTemplate.update(sql, publisher, name);
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to database", e);
+        }
+        return updatedRows;
+    }
+
+    @Override
+    public int updateYearPublishedByName(String name, int year_published) {
+        int updatedRows = 0;
+        String sql = "UPDATE board_games SET year_published = ? WHERE game_name = ?";
+        try {
+            updatedRows = jdbcTemplate.update(sql, year_published, name);
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to database", e);
+        }
+        return updatedRows;
+    }
+
+    @Override
+    public int updateDatePurchasedByName(String name, LocalDate date_purchased) {
+        int updatedRows = 0;
+        String sql = "UPDATE board_games SET date_purchased = ? WHERE game_name = ?";
+        try {
+            updatedRows = jdbcTemplate.update(sql, date_purchased, name);
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to database", e);
+        }
+        return updatedRows;
+    }
+
+    @Override
+    public int updatePriceByName(String name, double price) {
+        int updatedRows = 0;
+        String sql = "UPDATE board_games SET price = ? WHERE game_name = ?";
+        try {
+            updatedRows = jdbcTemplate.update(sql, price, name);
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to database", e);
+        }
+        return updatedRows;
+    }
+
+    @Override
+    public int updateTimeToTeachByName(String name, int time_to_teach_in_minutes) {
+        int updatedRows = 0;
+        String sql = "UPDATE board_games SET time_to_teach_in_minutes = ? WHERE game_name = ?";
+        try {
+            updatedRows = jdbcTemplate.update(sql, time_to_teach_in_minutes, name);
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to database", e);
+        }
+        return updatedRows;
+    }
+
+    @Override
+    public int updateTimeToPlayMinByName(String name, int time_to_play_in_minutes_min) {
+        int updatedRows = 0;
+        String sql = "UPDATE board_games SET time_to_play_in_minutes_min = ? WHERE game_name = ?";
+        try {
+            updatedRows = jdbcTemplate.update(sql, time_to_play_in_minutes_min, name);
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to database", e);
+        }
+        return updatedRows;
+    }
+
+    @Override
+    public int updateTimeToPlayMaxByName(String name, int time_to_play_in_minutes_max) {
+        int updatedRows = 0;
+        String sql = "UPDATE board_games SET time_to_play_in_minutes_max = ? WHERE game_name = ?";
+        try {
+            updatedRows = jdbcTemplate.update(sql, time_to_play_in_minutes_max, name);
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to database", e);
+        }
+        return updatedRows;
+    }
+
+    @Override
+    public int updatePlayersMinByName(String name, int min_players) {
+        int updatedRows = 0;
+        String sql = "UPDATE board_games SET min_players = ? WHERE game_name = ?";
+        try {
+            updatedRows = jdbcTemplate.update(sql, min_players, name);
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to database", e);
+        }
+        return updatedRows;
+    }
+
+    @Override
+    public int updatePlayersMaxByName(String name, int max_players) {
+        int updatedRows = 0;
+        String sql = "UPDATE board_games SET max_players = ? WHERE game_name = ?";
+        try {
+            updatedRows = jdbcTemplate.update(sql, max_players, name);
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to database", e);
+        }
+        return updatedRows;
+    }
+
+    public boolean getExpansionStatus(String name) {
+        String sql = "SELECT expansion FROM board_games WHERE game_name = ?";
+        boolean expansionStatus;
+        try {
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, name);
+            expansionStatus = results.getBoolean("expansion");
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to database", e);
+        }
+        return expansionStatus;
+    }
+
+    @Override
+    public int updateExpansionStatusByName(String name) {
+        int updatedRows = 0;
+        String sql = "SELECT expansion FROM board_games WHERE game_name = ?";
+        boolean currentStatus = getExpansionStatus(name);
+        if (currentStatus == true) {
+            String sqlSetFalse = "UPDATE board_games SET expansion = false WHERE game_name = ?";
+            try {
+                updatedRows = jdbcTemplate.update(sqlSetFalse, name);
+            } catch (CannotGetJdbcConnectionException e) {
+                throw new DaoException("Unable to connect to database", e);
+            }
+        } else if (currentStatus == false) {
+            String sqlSetTrue = "UPDATE board_games SET expansion = true WHERE game_name = ?";
+            try {
+                updatedRows = jdbcTemplate.update(sqlSetTrue, name);
+            } catch (CannotGetJdbcConnectionException e) {
+                throw new DaoException("Unable to connect to database", e);
+            }
+        }
+        return updatedRows;
+    }
+
+    @Override
+    public int updateDescriptionByName(String name, String description) {
+        int updatedRows = 0;
+        String sql = "UPDATE board_games SET description = ? WHERE game_name = ?";
+        try {
+            updatedRows = jdbcTemplate.update(sql, description, name);
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to database", e);
+        }
+        return updatedRows;
     }
 
 

@@ -6,6 +6,7 @@ import org.example.dao.BoardGameDao;
 import org.example.dao.JdbcBoardGameDao;
 import org.example.models.BoardGame;
 import org.example.view.Menu;
+import org.example.view.Prompts;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ import java.util.Scanner;
 public class BoardGameCLI {
 
     private Menu menu;
+    private Prompts prompt;
     private BoardGameDao boardGameDao;
 
     private Scanner userInput = new Scanner(System.in);
@@ -62,10 +64,14 @@ public class BoardGameCLI {
                 System.out.println("Selected 2 - Add game");
                 addNewGame();
             } else if (userSelection.equals("3")) {
-                System.out.println("Selected 3 - Delete game");
-                promptForDeleteGame();
+                System.out.println("Selected 3 - Edit game");
+                editGame();
 
             } else if (userSelection.equals("4")) {
+                System.out.println("Selected Delete Game");
+                promptForDeleteGame();
+            } else if (userSelection.equals("5")) {
+                System.out.println("Thanks for playing!");
                 break;
             }
 
@@ -81,18 +87,10 @@ public class BoardGameCLI {
     private void displayGameNames() {
         System.out.println("Games in your collection: ");
         for (String name : boardGameDao.getGameNames()) {
-            System.out.println(name);
+            System.out.println("| %3s " + name + " |");
         }
     }
 
-
-    // Method not working, causing error
-    private void displayAllGamesWithInfo() {
-        System.out.println("All games and info: ");
-        for (BoardGame game : boardGameDao.getBoardGames()) {
-            System.out.println(game.name);
-        }
-    }
 
     private void addNewGame() {
         BoardGame newBoarGame = promptForNewGameData();
@@ -175,10 +173,110 @@ public class BoardGameCLI {
     private void deleteGame(String game_name) {
         int deletedRows = boardGameDao.deleteGameByName(game_name);
         if (deletedRows == 0) {
-            displayError("Error in deleting game");
+            displayError("**Error in deleting game**");
         } else System.out.println("Game successfully deleted");
     }
 
+    private void editGame() {
+        int editedRows;
+        String selection = menu.editGameChoiceMenu();
+        if (selection.equals("1")) {
+            String currentName = promptForString("What is the current game name to edit?");
+            String newName = promptForString("What is the updated game name?");
+            editedRows = boardGameDao.updateGameNameByOldName(currentName, newName);
+            if (editedRows == 0) {
+                displayError("Error updating game");
+            } else System.out.println("Game updated");
+        }
+        if (selection.equals("2")) {
+            String game_name = promptForString("What game do you want to edit?");
+            String publisher = promptForString("What is the new publisher name?");
+            editedRows = boardGameDao.updateGamePublisherByName(game_name, publisher);
+            if (editedRows == 0) {
+                displayError("Error updating game");
+            } else System.out.println("Game updated");
+        }
+        if (selection.equals("3")) {
+            String game_name = promptForString("What game do you want to edit?");
+            int newYear = promptForInt("What year was the game published?");
+            editedRows = boardGameDao.updateYearPublishedByName(game_name, newYear);
+            if (editedRows == 0) {
+                displayError("Error updating game");
+            } else System.out.println("Game updated");
+        }
+        if (selection.equals("4")) {
+            String game_name = promptForString("What game do you want to edit?");
+            LocalDate newDate = promptForDate("What date was the game purchased?");
+            editedRows = boardGameDao.updateDatePurchasedByName(game_name, newDate);
+            if (editedRows == 0) {
+                displayError("Error updating game");
+            } else System.out.println("Game updated");
+        }
+        if (selection.equals("5")) {
+            String game_name = promptForString("What game do you want to edit?");
+            double newPrice = promptForDouble("What is the new price?");
+            editedRows = boardGameDao.updatePriceByName(game_name, newPrice);
+            if (editedRows == 0) {
+                displayError("Error updating game");
+            } else System.out.println("Game updated");
+        }
+        if (selection.equals("6")) {
+            String game_name = promptForString("What game do you want to edit?");
+            int newTime = promptForInt("How long does the game take to teach (in minutes)?");
+            editedRows = boardGameDao.updateTimeToTeachByName(game_name, newTime);
+            if (editedRows == 0) {
+                displayError("Error updating game");
+            } else System.out.println("Game updated");
+        }
+        if (selection.equals("7")) {
+            String game_name = promptForString("What game do you want to edit?");
+            int newTime = promptForInt("What is the minimum play time (in minutes)?");
+            editedRows = boardGameDao.updateTimeToPlayMinByName(game_name, newTime);
+            if (editedRows == 0) {
+                displayError("Error updating game");
+            } else System.out.println("Game updated");
+        }
+        if (selection.equals("8")) {
+            String game_name = promptForString("What game do you want to edit?");
+            int newTime = promptForInt("What is the maximum play time (in minutes)?");
+            editedRows = boardGameDao.updateTimeToPlayMaxByName(game_name, newTime);
+            if (editedRows == 0) {
+                displayError("Error updating game");
+            } else System.out.println("Game updated");
+        }
+        if (selection.equals("9")) {
+            String game_name = promptForString("What game do you want to edit?");
+            int newCount = promptForInt("What is the minimum number of players?");
+            editedRows = boardGameDao.updatePlayersMinByName(game_name, newCount);
+            if (editedRows == 0) {
+                displayError("Error updating game");
+            } else System.out.println("Game updated");
+        }
+        if (selection.equals("10")) {
+            String game_name = promptForString("What game do you want to edit?");
+            int newCount = promptForInt("What is the maximum number of players?");
+            editedRows = boardGameDao.updatePlayersMaxByName(game_name, newCount);
+            if (editedRows == 0) {
+                displayError("Error updating game");
+            } else System.out.println("Game updated");
+        }
+        if (selection.equals("11")) {
+            String game_name = promptForString("What game do you want to edit?");
+            editedRows = boardGameDao.updateExpansionStatusByName(game_name);
+            if (editedRows == 0) {
+                displayError("Error updating game");
+            } else System.out.println("Game updated");
+        }
+        if (selection.equals("12")) {
+            String game_name = promptForString("What game do you want to edit?");
+            String newDescription = promptForString("What is the new description?");
+            editedRows = boardGameDao.updateDescriptionByName(game_name, newDescription);
+            if (editedRows == 0) {
+                displayError("Error updating game");
+            } else System.out.println("Game updated");
+        }
+
+    }
 
 
 
@@ -199,7 +297,7 @@ public class BoardGameCLI {
                 if (response.isBlank()) {
                     return -1;
                 } else {
-                    displayError("Numbers only");
+                    displayError("**Numbers only**");
                 }
             }
         }
@@ -219,7 +317,7 @@ public class BoardGameCLI {
                 if (response.isBlank()) {
                     return null;
                 } else {
-                    displayError("Enter date as YYYY-MM-DD");
+                    displayError("**Enter date as YYYY-MM-DD**");
                 }
             }
         }
