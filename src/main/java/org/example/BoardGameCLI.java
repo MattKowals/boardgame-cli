@@ -56,19 +56,23 @@ public class BoardGameCLI {
             String userSelection = menu.showMainMenu();
             if (userSelection.equals("1")) {
                 System.out.println("Selected 1 - Show board games");
-                displayGameCount();
-//                displayGameNames();
                 boardGameDao.displayAllGamesData();
             } else if (userSelection.equals("2")) {
-                System.out.println("Selected 2 - Add game");
-                addNewGame();
+                System.out.println("Selected 2 - Game Collection Statistics");
+                displayGameCount();
+                // total spent on games
+                // number of games by publisher
+                // graph of when games were purchased?
             } else if (userSelection.equals("3")) {
-                System.out.println("Selected 3 - Edit game");
-                editGame();
+                System.out.println("Selected 3 - Add game");
+                addNewGame();
             } else if (userSelection.equals("4")) {
+                System.out.println("Selected 4 - Edit game");
+                editGame();
+            } else if (userSelection.equals("5")) {
                 System.out.println("Selected Delete Game");
                 promptForDeleteGame();
-            } else if (userSelection.equals("5")) {
+            } else if (userSelection.equals("6")) {
                 System.out.println("Thanks for playing!");
                 break;
             }
@@ -275,7 +279,9 @@ public class BoardGameCLI {
 
 
 
-    // Methods for converting answers to data
+    /****************************************
+     * Methods for converting answers to data
+     ****************************************/
 
     private String promptForString(String prompt) {
         System.out.println(prompt);

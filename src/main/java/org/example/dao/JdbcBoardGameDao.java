@@ -138,10 +138,12 @@ public class JdbcBoardGameDao implements BoardGameDao {
         } catch (DataIntegrityViolationException e) {
             throw new DaoException("Data integrity violation", e);
         }
-
         return numberOfRows;
     }
 
+    /***********************
+     * CRUD Update/Edit functions
+     ***********************/
     @Override
     public int updateGameNameByOldName(String oldName, String newName) {
         int updatedRows = 0;

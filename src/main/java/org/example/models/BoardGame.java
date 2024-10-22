@@ -5,6 +5,9 @@ import java.util.Date;
 
 public class BoardGame {
 
+    /***********
+     * Variables
+     ***********/
     public int game_id;
     public String name;
     public String publisher;
@@ -20,7 +23,10 @@ public class BoardGame {
     public String description;
 
 
-    // Constructor
+
+    /**************
+     * Constructors
+     **************/
     public BoardGame(int game_id, String name, String publisher,
                      int year_published, LocalDate date_purchased,
                      double price, int time_to_teach_in_minutes,
@@ -43,11 +49,13 @@ public class BoardGame {
         this.description = description;
     }
 
-    // Empty constructor
     public BoardGame() {
 
     }
 
+    /**********************
+     * Getters and Setters
+     * ********************/
 
     public int getGame_id() {
         return game_id;

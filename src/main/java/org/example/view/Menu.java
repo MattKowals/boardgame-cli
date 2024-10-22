@@ -21,10 +21,11 @@ public class Menu {
     public String showMainMenu() {
         System.out.println();
         System.out.println("1. Show Board Games");
-        System.out.println("2. Add Board Game");
-        System.out.println("3. Edit Board Game");
-        System.out.println("4. Delete Board Game");
-        System.out.println("5. Quit");
+        System.out.println("2. Game Collection Statistics");
+        System.out.println("3. Add Board Game");
+        System.out.println("4. Edit Board Game");
+        System.out.println("5. Delete Board Game");
+        System.out.println("6. Quit");
         System.out.print("--> ");
         return userInput.nextLine();
     }
