@@ -51,22 +51,20 @@ public class BoardGameCLI {
 
         // TODO add a try catch
 
-
         while (true) {
-
 
             String userSelection = menu.showMainMenu();
             if (userSelection.equals("1")) {
                 System.out.println("Selected 1 - Show board games");
                 displayGameCount();
-                displayGameNames();
+//                displayGameNames();
+                boardGameDao.displayAllGamesData();
             } else if (userSelection.equals("2")) {
                 System.out.println("Selected 2 - Add game");
                 addNewGame();
             } else if (userSelection.equals("3")) {
                 System.out.println("Selected 3 - Edit game");
                 editGame();
-
             } else if (userSelection.equals("4")) {
                 System.out.println("Selected Delete Game");
                 promptForDeleteGame();
@@ -74,9 +72,7 @@ public class BoardGameCLI {
                 System.out.println("Thanks for playing!");
                 break;
             }
-
         }
-
     }
 
     private void displayGameCount() {
@@ -87,10 +83,9 @@ public class BoardGameCLI {
     private void displayGameNames() {
         System.out.println("Games in your collection: ");
         for (String name : boardGameDao.getGameNames()) {
-            System.out.println("| %3s " + name + " |");
+            System.out.println("| " + name + " |");
         }
     }
-
 
     private void addNewGame() {
         BoardGame newBoarGame = promptForNewGameData();
