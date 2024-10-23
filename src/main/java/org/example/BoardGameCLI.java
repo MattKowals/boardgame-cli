@@ -54,23 +54,23 @@ public class BoardGameCLI {
 
             String userSelection = menu.showMainMenu();
             if (userSelection.equals("1")) {
-                System.out.println("Selected 1 - Show board games");
+                menu.showCollectionBanner();
                 boardGameDao.displayAllGamesData();
             } else if (userSelection.equals("2")) {
-                System.out.println("Selected 2 - Game Collection Statistics");
+                menu.showStatsBanner();
                 System.out.println();
-                displayGameCount();
+                displayGameTypeCount();
                 displayTotalPrices();
                 numberOfGamesPerPublisher();
                 // graph of when games were purchased?
             } else if (userSelection.equals("3")) {
-                System.out.println("Selected 3 - Add game");
+                menu.showAddGameBanner();
                 addNewGame();
             } else if (userSelection.equals("4")) {
-                System.out.println("Selected 4 - Edit game");
+                menu.editGameChoiceMenu();
                 editGame();
             } else if (userSelection.equals("5")) {
-                System.out.println("Selected Delete Game");
+                menu.showDeleteGameBanner();
                 promptForDeleteGame();
             } else if (userSelection.equals("6")) {
                 System.out.println("Thanks for playing!");
@@ -79,17 +79,15 @@ public class BoardGameCLI {
         }
     }
 
-    private void displayGameCount() {
-        System.out.println("Number of games: " + boardGameDao.getGameCount());
-    }
 
+    /******************
+     * Start of Methods
+     ******************/
 
-    // replaced displayGameNames() with displayAllGameData()
-    private void displayGameNames() {
-        System.out.println("Games in your collection: ");
-        for (String name : boardGameDao.getGameNames()) {
-            System.out.println("| " + name + " |");
-        }
+    private void displayGameTypeCount() {
+        System.out.printf("| %-16s | %-10s | %-10s |%n", "Total Game Count", "Base Games", "Expansions");
+        System.out.printf("| %-16s | %-10s | %-10s |%n", boardGameDao.getGameCount(), boardGameDao.getBaseGameCount(),
+                boardGameDao.getExpansionGameCount());
     }
 
     private void numberOfGamesPerPublisher() {
@@ -116,12 +114,8 @@ public class BoardGameCLI {
 
     private void displayTotalPrices() {
         double prices = boardGameDao.getGamePrices();
+        System.out.println();
         System.out.println("Total prices of games collection: $" + prices);
-    }
-
-    private void addNewGame() {
-        BoardGame newBoarGame = promptForNewGameData();
-        newBoarGame = boardGameDao.addBoardGame(newBoarGame);
     }
 
     private BoardGame promptForNewGameData() {
@@ -200,10 +194,14 @@ public class BoardGameCLI {
         return newGame;
     }
 
-
     private void promptForDeleteGame() {
         String game_name = promptForString("Enter the name of the game to delete: ");
         deleteGame(game_name);
+    }
+
+    private void addNewGame() {
+        BoardGame newBoarGame = promptForNewGameData();
+        newBoarGame = boardGameDao.addBoardGame(newBoarGame);
     }
 
     private void deleteGame(String game_name) {
@@ -314,6 +312,23 @@ public class BoardGameCLI {
 
     }
 
+
+    /******************
+     * Replaced Methods
+     ******************/
+
+    private void displayGameNames() {
+        // replaced displayGameNames() with displayAllGameData()
+        System.out.println("Games in your collection: ");
+        for (String name : boardGameDao.getGameNames()) {
+            System.out.println("| " + name + " |");
+        }
+    }
+
+    private void displayGameCount() {
+        // Replaced displayGameCount() with displayGameTypeCount()
+        System.out.println("Number of games: " + boardGameDao.getGameCount());
+    }
 
 
     /****************************************

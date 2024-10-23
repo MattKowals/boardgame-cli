@@ -10,9 +10,17 @@ public interface BoardGameDao {
     int getGameCount();
     List<String> getGameNames();
 
+    int getBaseGameCount();
+
+    int getExpansionGameCount();
+
     List<BoardGame> getBoardGames();
 
     List<String> getPublisherList();
+
+    List<String> getPublisherListForBaseGames();
+
+    List<String> getPublisherListForExpansions();
 
     double getGamePrices();
 

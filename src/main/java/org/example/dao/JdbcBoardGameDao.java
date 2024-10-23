@@ -22,15 +22,19 @@ public class JdbcBoardGameDao implements BoardGameDao {
     }
 
 
+    /******************
+     * Start of methods
+     ******************/
+
     @Override
-    public int getGameCount() {
-        int count = 0;
-        String sql = "SELECT COUNT(*) FROM board_games";
+    public List<String> getGameNames() {
+        List<String> names = new ArrayList<>();
+        String sql = "SELECT game_name FROM board_games";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
-        if (results.next()) {
-            count = results.getInt("count");
+        while (results.next()) {
+            names.add(results.getString("game_name"));
         }
-        return count;
+        return names;
     }
 
     @Override
@@ -47,58 +51,6 @@ public class JdbcBoardGameDao implements BoardGameDao {
             gameCollection.add(boardGame);
         }
         return gameCollection;
-    }
-
-    @Override
-    public List<String> getGameNames() {
-        List<String> names = new ArrayList<>();
-        String sql = "SELECT game_name FROM board_games";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
-        while (results.next()) {
-            names.add(results.getString("game_name"));
-        }
-        return names;
-    }
-
-    @Override
-    public List<String> getPublisherList() {
-        List<String> publishers = new ArrayList<>();
-        String sql = "SELECT publisher FROM board_games";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
-        while (results.next()) {
-            publishers.add(results.getString("publisher"));
-        }
-        return publishers;
-    }
-
-    @Override
-    public double getGamePrices() {
-        double totalPrices = 0;
-        String sql = "SELECT SUM(price) AS total FROM board_games";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
-        if (results.next()) {
-            totalPrices = results.getDouble("total");
-        }
-        return totalPrices;
-    }
-
-    public BoardGame getGameById(int game_id) {
-        BoardGame game = null;
-        String sql = "SELECT game_id, game_name, publisher, year_published, date_purchased, price, time_to_teach_in_minutes, " +
-                "time_to_play_in_minutes_min, time_to_play_in_minutes_max, min_players, max_players," +
-                "expansion, description " +
-                "FROM board_games WHERE game_id = ?;";
-        try {
-            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, game_id);
-            if (results.next()) {
-                game = mapRowToGame(results);
-            }
-        } catch (CannotGetJdbcConnectionException e) {
-            throw new DaoException("Unable to connect to database", e);
-        } catch (BadSqlGrammarException e) {
-            throw new DaoException("SQL syntax error", e);
-        }
-        return game;
     }
 
     @Override
@@ -120,9 +72,114 @@ public class JdbcBoardGameDao implements BoardGameDao {
         }
     }
 
-    /*******************************
-     * CRUD Add and Delete functions
-     *******************************/
+    public BoardGame getGameById(int game_id) {
+        BoardGame game = null;
+        String sql = "SELECT game_id, game_name, publisher, year_published, date_purchased, price, time_to_teach_in_minutes, " +
+                "time_to_play_in_minutes_min, time_to_play_in_minutes_max, min_players, max_players," +
+                "expansion, description " +
+                "FROM board_games WHERE game_id = ?;";
+        try {
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, game_id);
+            if (results.next()) {
+                game = mapRowToGame(results);
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to database", e);
+        } catch (BadSqlGrammarException e) {
+            throw new DaoException("SQL syntax error", e);
+        }
+        return game;
+    }
+
+
+
+    /********************
+     * Statistics Methods
+     ********************/
+
+    @Override
+    public int getGameCount() {
+        int count = 0;
+        String sql = "SELECT COUNT(*) FROM board_games";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        if (results.next()) {
+            count = results.getInt("count");
+        }
+        return count;
+    }
+
+    @Override
+    public int getBaseGameCount() {
+        int count = 0;
+        String sql = "SELECT COUNT(*) FROM board_games WHERE expansion = 'false'";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        if (results.next()) {
+            count = results.getInt("count");
+        }
+        return count;
+    }
+
+    @Override
+    public int getExpansionGameCount() {
+        int count = 0;
+        String sql = "SELECT COUNT(*) FROM board_games WHERE expansion = 'true'";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        if (results.next()) {
+            count = results.getInt("count");
+        }
+        return count;
+    }
+
+    @Override
+    public List<String> getPublisherList() {
+        List<String> publishers = new ArrayList<>();
+        String sql = "SELECT publisher FROM board_games";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        while (results.next()) {
+            publishers.add(results.getString("publisher"));
+        }
+        return publishers;
+    }
+
+    @Override
+    public List<String> getPublisherListForBaseGames() {
+        List<String> publishers = new ArrayList<>();
+        String sql = "SELECT publisher FROM board_games WHERE expansion = 'false'";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        while (results.next()) {
+            publishers.add(results.getString("publisher"));
+        }
+        return publishers;
+    }
+
+    @Override
+    public List<String> getPublisherListForExpansions() {
+        List<String> publishers = new ArrayList<>();
+        String sql = "SELECT publisher FROM board_games WHERE expansion = 'true'";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        while (results.next()) {
+            publishers.add(results.getString("publisher"));
+        }
+        return publishers;
+    }
+
+    @Override
+    public double getGamePrices() {
+        double totalPrices = 0;
+        String sql = "SELECT SUM(price) AS total FROM board_games";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        if (results.next()) {
+            totalPrices = results.getDouble("total");
+        }
+        return totalPrices;
+    }
+
+
+
+
+    /*****************************
+     * CRUD Add and Delete methods
+     *****************************/
 
     @Override
     public BoardGame addBoardGame(BoardGame boardGame) {
@@ -167,9 +224,12 @@ public class JdbcBoardGameDao implements BoardGameDao {
         return numberOfRows;
     }
 
-    /****************************
-     * CRUD Update/Edit functions
-     ****************************/
+
+
+    /**************************
+     * CRUD Update/Edit methods
+     **************************/
+
     @Override
     public int updateGameNameByOldName(String oldName, String newName) {
         int updatedRows = 0;
@@ -290,7 +350,6 @@ public class JdbcBoardGameDao implements BoardGameDao {
         return updatedRows;
     }
 
-
     private boolean getExpansionStatus(String name) {
         String sql = "SELECT expansion FROM board_games WHERE game_name = ?";
         boolean expansionStatus = false;
@@ -341,7 +400,9 @@ public class JdbcBoardGameDao implements BoardGameDao {
 
 
 
-
+    /****************
+     * Mapping method
+     ****************/
 
     private BoardGame mapRowToGame(SqlRowSet rowSet) {
         BoardGame boardGame = new BoardGame();
