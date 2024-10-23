@@ -60,6 +60,28 @@ public class JdbcBoardGameDao implements BoardGameDao {
         return names;
     }
 
+    @Override
+    public List<String> getPublisherList() {
+        List<String> publishers = new ArrayList<>();
+        String sql = "SELECT publisher FROM board_games";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        while (results.next()) {
+            publishers.add(results.getString("publisher"));
+        }
+        return publishers;
+    }
+
+    @Override
+    public double getGamePrices() {
+        double totalPrices = 0;
+        String sql = "SELECT SUM(price) AS total FROM board_games";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        if (results.next()) {
+            totalPrices = results.getDouble("total");
+        }
+        return totalPrices;
+    }
+
     public BoardGame getGameById(int game_id) {
         BoardGame game = null;
         String sql = "SELECT game_id, game_name, publisher, year_published, date_purchased, price, time_to_teach_in_minutes, " +
@@ -97,6 +119,10 @@ public class JdbcBoardGameDao implements BoardGameDao {
             System.out.println(individualGame);
         }
     }
+
+    /*******************************
+     * CRUD Add and Delete functions
+     *******************************/
 
     @Override
     public BoardGame addBoardGame(BoardGame boardGame) {
@@ -141,9 +167,9 @@ public class JdbcBoardGameDao implements BoardGameDao {
         return numberOfRows;
     }
 
-    /***********************
+    /****************************
      * CRUD Update/Edit functions
-     ***********************/
+     ****************************/
     @Override
     public int updateGameNameByOldName(String oldName, String newName) {
         int updatedRows = 0;

@@ -11,8 +11,7 @@ import org.example.view.Prompts;
 import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.Locale;
-import java.util.Scanner;
+import java.util.*;
 
 public class BoardGameCLI {
 
@@ -59,9 +58,10 @@ public class BoardGameCLI {
                 boardGameDao.displayAllGamesData();
             } else if (userSelection.equals("2")) {
                 System.out.println("Selected 2 - Game Collection Statistics");
+                System.out.println();
                 displayGameCount();
-                // total spent on games
-                // number of games by publisher
+                displayTotalPrices();
+                numberOfGamesPerPublisher();
                 // graph of when games were purchased?
             } else if (userSelection.equals("3")) {
                 System.out.println("Selected 3 - Add game");
@@ -81,14 +81,42 @@ public class BoardGameCLI {
 
     private void displayGameCount() {
         System.out.println("Number of games: " + boardGameDao.getGameCount());
-        System.out.println();
     }
 
+
+    // replaced displayGameNames() with displayAllGameData()
     private void displayGameNames() {
         System.out.println("Games in your collection: ");
         for (String name : boardGameDao.getGameNames()) {
             System.out.println("| " + name + " |");
         }
+    }
+
+    private void numberOfGamesPerPublisher() {
+        List<String> publishers = new ArrayList<>();
+        publishers = boardGameDao.getPublisherList();
+        Map<String, Integer> publisherCount = new HashMap<>();
+        for (String publisher : publishers) {
+            if (publisherCount.containsKey(publisher)) {
+                int currentValue = publisherCount.get(publisher);
+                int newValue = currentValue + 1;
+                publisherCount.put(publisher, newValue);
+            } else {
+                publisherCount.put(publisher, 1);
+            }
+        }
+        System.out.println();
+        System.out.printf("%-18s | %-8s", "Publisher", "Number of Games");
+        System.out.println();
+        for (Map.Entry<String, Integer> entry : publisherCount.entrySet()) {
+            System.out.printf("%-18s | %-8s%n", entry.getKey(), entry.getValue());
+//            System.out.println(entry.getKey() + " | " + entry.getValue() + " games");
+        }
+    }
+
+    private void displayTotalPrices() {
+        double prices = boardGameDao.getGamePrices();
+        System.out.println("Total prices of games collection: $" + prices);
     }
 
     private void addNewGame() {
@@ -136,6 +164,10 @@ public class BoardGameCLI {
         int newMaxTimeToPlay = -1;
             while (newMaxTimeToPlay == -1) {
                 newMaxTimeToPlay = promptForInt("Maximum gameplay time (in minutes) :");
+                if (newMaxTimeToPlay < newMinTimeToPlay) {
+                    newMaxTimeToPlay = -1;
+                    System.out.println("Maximum time to play must be greater than or equal to minimum time to play.");
+                }
             }
             newGame.setTime_to_play_in_minutes_max(newMaxTimeToPlay);
         int newMinPlayers = -1;
@@ -146,7 +178,12 @@ public class BoardGameCLI {
         int newMaxPlayers = -1;
             while (newMaxPlayers == -1) {
                 newMaxPlayers = promptForInt("Maximum number of players: ");
+                if (newMaxPlayers < newMinPlayers) {
+                    newMaxPlayers = -1;
+                    System.out.println("Maximum number of players must be greater than or equal to minimum players.");
+                }
             }
+            newGame.setMax_players(newMaxPlayers);
         boolean isExpansion = false;
             String yes_or_no = promptForString("Is this game an expansion (yes/no): ").toLowerCase();
             if (yes_or_no.equals("yes")) {

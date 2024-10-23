@@ -12,6 +12,10 @@ public interface BoardGameDao {
 
     List<BoardGame> getBoardGames();
 
+    List<String> getPublisherList();
+
+    double getGamePrices();
+
     void displayAllGamesData();
 
     BoardGame addBoardGame(BoardGame boardGame);
