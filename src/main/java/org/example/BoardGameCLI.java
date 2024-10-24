@@ -61,13 +61,13 @@ public class BoardGameCLI {
                 System.out.println();
                 displayGameTypeCount();
                 displayTotalPrices();
-                numberOfGamesPerPublisher();
+                bubbleSortGamesPerPublisher(numberOfGamesPerPublisher());
                 // graph of when games were purchased?
             } else if (userSelection.equals("3")) {
                 menu.showAddGameBanner();
                 addNewGame();
             } else if (userSelection.equals("4")) {
-                menu.editGameChoiceMenu();
+                menu.showEditGameBanner();
                 editGame();
             } else if (userSelection.equals("5")) {
                 menu.showDeleteGameBanner();
@@ -90,9 +90,8 @@ public class BoardGameCLI {
                 boardGameDao.getExpansionGameCount());
     }
 
-    private void numberOfGamesPerPublisher() {
-        List<String> publishers = new ArrayList<>();
-        publishers = boardGameDao.getPublisherList();
+    private Map<String, Integer> numberOfGamesPerPublisher() {
+        List<String> publishers = boardGameDao.getPublisherList();
         Map<String, Integer> publisherCount = new HashMap<>();
         for (String publisher : publishers) {
             if (publisherCount.containsKey(publisher)) {
@@ -103,12 +102,17 @@ public class BoardGameCLI {
                 publisherCount.put(publisher, 1);
             }
         }
+        return publisherCount;
+    }
+
+    private void bubbleSortGamesPerPublisher(Map<String, Integer> publisherCount) {
+        publisherCount = numberOfGamesPerPublisher();
+        List<Map.Entry<String, Integer>> orderedMap = bubbleSortDescending(publisherCount);
         System.out.println();
         System.out.printf("%-18s | %-8s", "Publisher", "Number of Games");
         System.out.println();
-        for (Map.Entry<String, Integer> entry : publisherCount.entrySet()) {
+        for (Map.Entry<String, Integer> entry : orderedMap) {
             System.out.printf("%-18s | %-8s%n", entry.getKey(), entry.getValue());
-//            System.out.println(entry.getKey() + " | " + entry.getValue() + " games");
         }
     }
 
@@ -189,7 +193,6 @@ public class BoardGameCLI {
                 newDescription = promptForString("Game description: ");
             }
             newGame.setDescription(newDescription);
-
 
         return newGame;
     }
@@ -311,6 +314,20 @@ public class BoardGameCLI {
         }
 
     }
+
+    public List<Map.Entry<String, Integer>> bubbleSortDescending(Map<String, Integer> map) {
+        List<Map.Entry<String, Integer>> entryList = new ArrayList<>(map.entrySet());
+        int n = entryList.size();
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (entryList.get(j).getValue() < entryList.get(j + 1).getValue()) {
+                    Collections.swap(entryList, j, j + 1);
+                }
+            }
+        }
+        return entryList;
+    }
+
 
 
     /******************
