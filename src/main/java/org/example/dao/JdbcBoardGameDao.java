@@ -92,6 +92,58 @@ public class JdbcBoardGameDao implements BoardGameDao {
     }
 
 
+    /*****************
+     * Sorting Methods
+     *****************/
+
+    @Override
+    public List<BoardGame> sortGameNamesAscending() {
+        List<BoardGame> games = new ArrayList<>();
+        String sql = "SELECT * FROM board_games ORDER BY game_name ASC";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        while (results.next()) {
+            BoardGame boardGame = mapRowToGame(results);
+            games.add(boardGame);
+        }
+        return games;
+    }
+
+    @Override
+    public List<BoardGame> sortGamesByMinTimeToPlay() {
+        List<BoardGame> games = new ArrayList<>();
+        String sql = "SELECT * FROM board_games ORDER BY time_to_play_in_minutes_min ASC";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        while (results.next()) {
+            BoardGame boardGame = mapRowToGame(results);
+            games.add(boardGame);
+        }
+        return games;
+    }
+
+    @Override
+    public List<BoardGame> sortByBaseGameAndName() {
+        List<BoardGame> games = new ArrayList<>();
+        String sql = "SELECT * FROM board_games WHERE expansion is false ORDER BY game_name ASC";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        while (results.next()) {
+            BoardGame boardGame = mapRowToGame(results);
+            games.add(boardGame);
+        }
+        return games;
+    }
+
+    @Override
+    public List<BoardGame> chooseNumberOfPlayers(int count) {
+        List<BoardGame> games = new ArrayList<>();
+        String sql = "SELECT * FROM board_games WHERE expansion is false AND ? BETWEEN min_players AND max_players ORDER BY game_name ASC";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, count);
+        while (results.next()) {
+            BoardGame boardGame = mapRowToGame(results);
+            games.add(boardGame);
+        }
+        return games;
+    }
+
 
     /********************
      * Statistics Methods
