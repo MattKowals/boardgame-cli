@@ -4,7 +4,7 @@ DROP SEQUENCE IF EXISTS game_serial;
 CREATE SEQUENCE game_serial;
 CREATE TABLE board_games (
     game_id int NOT NULL DEFAULT nextval('game_serial'),
-    game_name varchar(40) not null,
+    game_name varchar(100) not null,
     publisher varchar(35),
     year_published int,
     date_purchased date,

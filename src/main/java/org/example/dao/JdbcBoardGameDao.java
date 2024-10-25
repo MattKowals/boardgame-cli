@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class JdbcBoardGameDao implements BoardGameDao {
 
@@ -53,25 +54,6 @@ public class JdbcBoardGameDao implements BoardGameDao {
         return gameCollection;
     }
 
-    @Override
-    public void displayAllGamesData() {
-        BoardGame[] games = getBoardGames().toArray(new BoardGame[0]);
-        String header = String.format("| %-45s | %-20s | %-6s | %-16s | %-8s | %-15s | %-14s | %-14s | %-11s | %s",
-                "Name", "Publisher", "Year", "Date Purchased", "Price", "Time to Teach", "Time to Play", "Player Count", "Game Type", "Description");
-        System.out.println(header);
-        for (int i = 0; i < games.length; i++) {
-            String expansionDetail = "";
-            if (games[0].expansion == true) {
-                expansionDetail = "Expansion";
-            } else expansionDetail = "Base Game";
-            String individualGame = String.format("| %-45s | %-20s | %-6d | %-16s | $%-7.2f | %-15s | %-14s | %-14s | %-11s | %s",
-                    games[i].getName(), games[i].getPublisher(), games[i].getYear_published(), games[i].getDate_purchased(), games[i].getPrice(),
-                    games[i].getTime_to_teach_in_minutes(), games[i].getTime_to_play_in_minutes_min() + " - " + games[i].getTime_to_play_in_minutes_max(),
-                    games[i].getMin_players() + " - " + games[i].getMax_players(), expansionDetail, games[i].getDescription());
-            System.out.println(individualGame);
-        }
-    }
-
     public BoardGame getGameById(int game_id) {
         BoardGame game = null;
         String sql = "SELECT game_id, game_name, publisher, year_published, date_purchased, price, time_to_teach_in_minutes, " +
@@ -89,6 +71,15 @@ public class JdbcBoardGameDao implements BoardGameDao {
             throw new DaoException("SQL syntax error", e);
         }
         return game;
+    }
+
+    @Override
+    public BoardGame getRandomGame() {
+        List<BoardGame> games = getBoardGames();
+        Random random = new Random();
+        int index = random.nextInt(games.size());
+        BoardGame randomGame = games.get(index);
+        return randomGame;
     }
 
 

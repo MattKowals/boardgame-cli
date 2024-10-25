@@ -55,15 +55,16 @@ public class BoardGameCLI {
             String userSelection = menu.showMainMenu();
             if (userSelection.equals("1")) {
                 menu.showCollectionBanner();
-                boardGameDao.displayAllGamesData();
+                printGameList(boardGameDao.getBoardGames());
             } else if (userSelection.equals("2")) {
+                printGameList(boardGameDao.sortByBaseGameAndName());
                 pickNumberOfPlayers();
             } else if (userSelection.equals("3")) {
                 menu.showStatsBanner();
                 System.out.println();
                 displayGameTypeCount();
                 displayTotalPrices();
-                bubbleSortGamesPerPublisher(numberOfGamesPerPublisher());
+                bubbleSortGamesPerPublisher();
                 // graph of when games were purchased?
             } else if (userSelection.equals("4")) {
                 menu.showAddGameBanner();
@@ -77,6 +78,8 @@ public class BoardGameCLI {
             } else if (userSelection.equals("7")) {
                 System.out.println("Thanks for playing!");
                 break;
+            } else if (userSelection.equals("0")) {
+                System.out.println(boardGameDao.getRandomGame().getName());
             }
         }
     }
@@ -93,7 +96,7 @@ public class BoardGameCLI {
         System.out.println(header);
         for (int i = 0; i < games.length; i++) {
             String expansionDetail = "";
-            if (games[0].expansion == true) {
+            if (games[i].expansion == true) {
                 expansionDetail = "Expansion";
             } else expansionDetail = "Base Game";
             String individualGame = String.format("| %-45s | %-20s | %-6d | %-16s | $%-7.2f | %-15s | %-14s | %-14s | %-11s | %s",
@@ -116,10 +119,9 @@ public class BoardGameCLI {
         printGameList(games);
     }
 
-    private Map<String, Integer> numberOfGamesPerPublisher() {
-        List<String> publishers = boardGameDao.getPublisherList();
+    private Map<String, Integer> numberOfGamesPerPublisher(List<String> publisherList) {
         Map<String, Integer> publisherCount = new HashMap<>();
-        for (String publisher : publishers) {
+        for (String publisher : publisherList) {
             if (publisherCount.containsKey(publisher)) {
                 int currentValue = publisherCount.get(publisher);
                 int newValue = currentValue + 1;
@@ -131,14 +133,21 @@ public class BoardGameCLI {
         return publisherCount;
     }
 
-    private void bubbleSortGamesPerPublisher(Map<String, Integer> publisherCount) {
-        publisherCount = numberOfGamesPerPublisher();
-        List<Map.Entry<String, Integer>> orderedMap = bubbleSortDescending(publisherCount);
+    private void bubbleSortGamesPerPublisher() {
+        Map<String, Integer> publisherFullCount = numberOfGamesPerPublisher(boardGameDao.getPublisherList());
+        List<Map.Entry<String, Integer>> totalCountMap = bubbleSortDescending(publisherFullCount);
+        Map<String, Integer> publisherBaseGameCount = numberOfGamesPerPublisher(boardGameDao.getPublisherListForBaseGames());
+        Map<String, Integer> publisherExpansionCount = numberOfGamesPerPublisher(boardGameDao.getPublisherListForExpansions());
         System.out.println();
-        System.out.printf("%-18s | %-8s", "Publisher", "Number of Games");
+        System.out.printf("%-18s | %-12s | %-5s | %-6s ", "Publisher", "Total Games", "Base", "Expansion");
         System.out.println();
-        for (Map.Entry<String, Integer> entry : orderedMap) {
-            System.out.printf("%-18s | %-8s%n", entry.getKey(), entry.getValue());
+        for (Map.Entry<String, Integer> entry : totalCountMap) {
+            int baseCount = publisherBaseGameCount.get(entry.getKey());
+            int expansionCount = 0;
+            if (publisherExpansionCount.get(entry.getKey()) != null) {
+                expansionCount = publisherExpansionCount.get(entry.getKey());
+            }
+            System.out.printf("%-18s | %-12s | %-5s | %-6s%n" , entry.getKey(), entry.getValue(), baseCount, expansionCount);
         }
     }
 
