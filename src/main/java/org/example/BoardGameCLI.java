@@ -36,7 +36,7 @@ public class BoardGameCLI {
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setUrl("jdbc:postgresql://localhost:5432/boardgames_db");
         dataSource.setUsername("postgres");
-        dataSource.setPassword("Beta150@");   // TODO: 10/10/2024 Hide password
+        dataSource.setPassword("postgres1"); 
 
         BoardGameCLI cli = new BoardGameCLI(dataSource, menu);
         cli.run();
@@ -47,8 +47,6 @@ public class BoardGameCLI {
     public void run() {
 
         menu.showAppName();
-
-        // TODO add a try catch
 
         while (true) {
 
@@ -65,6 +63,7 @@ public class BoardGameCLI {
                 displayGameTypeCount();
                 displayTotalPrices();
                 bubbleSortGamesPerPublisher();
+                // I'd like to add a graph here
                 // graph of when games were purchased?
             } else if (userSelection.equals("4")) {
                 menu.showAddGameBanner();
@@ -95,12 +94,18 @@ public class BoardGameCLI {
                 "Name", "Publisher", "Year", "Date Purchased", "Price", "Time to Teach", "Time to Play", "Player Count", "Game Type", "Description");
         System.out.println(header);
         for (int i = 0; i < games.length; i++) {
+            String datePurchased = games[i].date_purchased.toString();
+            // promptForNewGameData() sets null date as 1970-01-01
+            // This sets 1970-01-01 as "N/A"
+            if (games[i].date_purchased.isEqual(LocalDate.parse("1970-01-01"))) {
+                datePurchased = "N/A";
+            }
             String expansionDetail = "";
             if (games[i].expansion == true) {
                 expansionDetail = "Expansion";
             } else expansionDetail = "Base Game";
             String individualGame = String.format("| %-45s | %-20s | %-6d | %-16s | $%-7.2f | %-15s | %-14s | %-14s | %-11s | %s",
-                    games[i].getName(), games[i].getPublisher(), games[i].getYear_published(), games[i].getDate_purchased(), games[i].getPrice(),
+                    games[i].getName(), games[i].getPublisher(), games[i].getYear_published(), datePurchased, games[i].getPrice(),
                     games[i].getTime_to_teach_in_minutes(), games[i].getTime_to_play_in_minutes_min() + " - " + games[i].getTime_to_play_in_minutes_max(),
                     games[i].getMin_players() + " - " + games[i].getMax_players(), expansionDetail, games[i].getDescription());
             System.out.println(individualGame);
@@ -114,6 +119,7 @@ public class BoardGameCLI {
     }
 
     private void pickNumberOfPlayers() {
+        System.out.println();
         int count = promptForInt("How many players?");
         List<BoardGame> games = boardGameDao.chooseNumberOfPlayers(count);
         printGameList(games);
@@ -157,6 +163,11 @@ public class BoardGameCLI {
         System.out.println("Total prices of games collection: $" + prices);
     }
 
+    private void addNewGame() {
+        BoardGame newBoarGame = promptForNewGameData();
+        newBoarGame = boardGameDao.addBoardGame(newBoarGame);
+    }
+
     private BoardGame promptForNewGameData() {
         BoardGame newGame = new BoardGame();
         String newName = "";
@@ -175,8 +186,10 @@ public class BoardGameCLI {
             }
             newGame.setYear_published(newYear);
         LocalDate newDatePurchased = null;
-            while (newDatePurchased == null) {
-                newDatePurchased = promptForDate("Date purchased (YYYY-MM-DD): ");
+            newDatePurchased = promptForDate("Date purchased (YYYY-MM-DD): ");
+            if (newDatePurchased == null) {
+                // sets date as 1970-01-01
+                newDatePurchased = LocalDate.ofEpochDay(0000-00-00);
             }
             newGame.setDate_purchased(newDatePurchased);
         double newPrice = -1;
@@ -232,21 +245,16 @@ public class BoardGameCLI {
         return newGame;
     }
 
-    private void promptForDeleteGame() {
-        String game_name = promptForString("Enter the name of the game to delete: ");
-        deleteGame(game_name);
-    }
-
-    private void addNewGame() {
-        BoardGame newBoarGame = promptForNewGameData();
-        newBoarGame = boardGameDao.addBoardGame(newBoarGame);
-    }
-
     private void deleteGame(String game_name) {
         int deletedRows = boardGameDao.deleteGameByName(game_name);
         if (deletedRows == 0) {
             displayError("**Error in deleting game**");
         } else System.out.println("Game successfully deleted");
+    }
+
+    private void promptForDeleteGame() {
+        String game_name = promptForString("Enter the name of the game to delete: ");
+        deleteGame(game_name);
     }
 
     private void editGame() {

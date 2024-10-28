@@ -94,6 +94,7 @@ public class Menu {
         System.out.println("5. Edit Board Game");
         System.out.println("6. Delete Board Game");
         System.out.println("7. Quit");
+        System.out.println("0. Get a random game");
         System.out.print("--> ");
         return userInput.nextLine();
     }
