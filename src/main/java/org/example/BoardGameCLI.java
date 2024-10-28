@@ -9,6 +9,7 @@ import org.example.view.Menu;
 import org.example.view.Prompts;
 
 import javax.sql.DataSource;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -18,6 +19,7 @@ public class BoardGameCLI {
     private Menu menu;
     private Prompts prompt;
     private BoardGameDao boardGameDao;
+
 
     private Scanner userInput = new Scanner(System.in);
 
@@ -36,7 +38,7 @@ public class BoardGameCLI {
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setUrl("jdbc:postgresql://localhost:5432/boardgames_db");
         dataSource.setUsername("postgres");
-        dataSource.setPassword("postgres1"); 
+        dataSource.setPassword("postgres1");
 
         BoardGameCLI cli = new BoardGameCLI(dataSource, menu);
         cli.run();
@@ -79,6 +81,8 @@ public class BoardGameCLI {
                 break;
             } else if (userSelection.equals("0")) {
                 System.out.println(boardGameDao.getRandomGame().getName());
+            } else if (userSelection.equals("9")) {
+                exportDatabaseToFile(promptForExportDatabase());
             }
         }
     }
@@ -112,17 +116,64 @@ public class BoardGameCLI {
         }
     }
 
-    private void displayGameTypeCount() {
-        System.out.printf("| %-16s | %-10s | %-10s |%n", "Total Game Count", "Base Games", "Expansions");
-        System.out.printf("| %-16s | %-10s | %-10s |%n", boardGameDao.getGameCount(), boardGameDao.getBaseGameCount(),
-                boardGameDao.getExpansionGameCount());
-    }
-
     private void pickNumberOfPlayers() {
         System.out.println();
         int count = promptForInt("How many players?");
         List<BoardGame> games = boardGameDao.chooseNumberOfPlayers(count);
         printGameList(games);
+    }
+
+    private String promptForExportDatabase() {
+        String csvFileName = promptForString("What do you want to call the new file: ") + ".csv";
+        return csvFileName;
+    }
+    
+    private void exportDatabaseToFile(String filePath) {
+        String success = "Database not exported";
+        List<BoardGame> boardGames = boardGameDao.getBoardGames();
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            writer.write("game_id,name,publisher,year_published,date_purchased,price,time_to_teach_in_minutes,time_to_play_in_minutes_min,time_to_play_in_minutes_max,min_players,max_players,expansion,description");
+            writer.newLine();
+            for (BoardGame game : boardGames) {
+                writer.write(game.getGame_id() + "," +
+                        game.getName() + "," +
+                        game.getPublisher() + "," +
+                        game.getYear_published() + "," +
+                        game.getDate_purchased() + "," +
+                        game.getPrice() + "," +
+                        game.getTime_to_teach_in_minutes() + "," +
+                        game.getTime_to_play_in_minutes_min() + "," +
+                        game.getTime_to_play_in_minutes_max() + "," +
+                        game.getMin_players() + "," +
+                        game.getMax_players() + "," +
+                        game.isExpansion() + "," +
+                        game.getDescription());
+                writer.newLine();
+            }
+            success = "Database exported to file: " + filePath;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(success);
+    }
+
+    /********************
+     * Statistics Methods
+     ********************/
+
+    public List<Map.Entry<String, Integer>> bubbleSortDescending(Map<String, Integer> map) {
+        List<Map.Entry<String, Integer>> entryList = new ArrayList<>(map.entrySet());
+        int n = entryList.size();
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (entryList.get(j).getValue() < entryList.get(j + 1).getValue()) {
+                    Collections.swap(entryList, j, j + 1);
+                }
+            }
+        }
+        return entryList;
     }
 
     private Map<String, Integer> numberOfGamesPerPublisher(List<String> publisherList) {
@@ -163,6 +214,17 @@ public class BoardGameCLI {
         System.out.println("Total prices of games collection: $" + prices);
     }
 
+    private void displayGameTypeCount() {
+        System.out.printf("| %-16s | %-10s | %-10s |%n", "Total Game Count", "Base Games", "Expansions");
+        System.out.printf("| %-16s | %-10s | %-10s |%n", boardGameDao.getGameCount(), boardGameDao.getBaseGameCount(),
+                boardGameDao.getExpansionGameCount());
+    }
+
+
+    /**************
+     * CRUD Methods
+     **************/
+
     private void addNewGame() {
         BoardGame newBoarGame = promptForNewGameData();
         newBoarGame = boardGameDao.addBoardGame(newBoarGame);
@@ -171,76 +233,76 @@ public class BoardGameCLI {
     private BoardGame promptForNewGameData() {
         BoardGame newGame = new BoardGame();
         String newName = "";
-            while (newName.isBlank()) {
-                newName = promptForString("Game name: ");
-            }
-            newGame.setName(newName);
+        while (newName.isBlank()) {
+            newName = promptForString("Game name: ");
+        }
+        newGame.setName(newName);
         String newPublisher = "";
-            while (newPublisher.isBlank()) {
-                newPublisher = promptForString("Publisher: ");
-            }
-            newGame.setPublisher(newPublisher);
+        while (newPublisher.isBlank()) {
+            newPublisher = promptForString("Publisher: ");
+        }
+        newGame.setPublisher(newPublisher);
         int newYear = 0;
-            while (newYear == 0) {
-                newYear = promptForInt("Year game released: ");
-            }
-            newGame.setYear_published(newYear);
+        while (newYear == 0) {
+            newYear = promptForInt("Year game released: ");
+        }
+        newGame.setYear_published(newYear);
         LocalDate newDatePurchased = null;
-            newDatePurchased = promptForDate("Date purchased (YYYY-MM-DD): ");
-            if (newDatePurchased == null) {
-                // sets date as 1970-01-01
-                newDatePurchased = LocalDate.ofEpochDay(0000-00-00);
-            }
-            newGame.setDate_purchased(newDatePurchased);
+        newDatePurchased = promptForDate("Date purchased (YYYY-MM-DD): ");
+        if (newDatePurchased == null) {
+            // sets date as 1970-01-01
+            newDatePurchased = LocalDate.ofEpochDay(0000-00-00);
+        }
+        newGame.setDate_purchased(newDatePurchased);
         double newPrice = -1;
-            while (newPrice == -1) {
-                newPrice = promptForDouble("Price: ");
-            }
-            newGame.setPrice(newPrice);
+        while (newPrice == -1) {
+            newPrice = promptForDouble("Price: ");
+        }
+        newGame.setPrice(newPrice);
         int newTimeToTeach = -1;
-            while (newTimeToTeach == -1) {
-                newTimeToTeach = promptForInt("Time to teach game (in minutes): ");
-            }
-            newGame.setTime_to_teach_in_minutes(newTimeToTeach);
+        while (newTimeToTeach == -1) {
+            newTimeToTeach = promptForInt("Time to teach game (in minutes): ");
+        }
+        newGame.setTime_to_teach_in_minutes(newTimeToTeach);
         int newMinTimeToPlay = -1;
-            while (newMinTimeToPlay == -1) {
-                newMinTimeToPlay = promptForInt("Minimum gameplay time (in minutes): ");
-            }
-            newGame.setTime_to_play_in_minutes_min(newMinTimeToPlay);
+        while (newMinTimeToPlay == -1) {
+            newMinTimeToPlay = promptForInt("Minimum gameplay time (in minutes): ");
+        }
+        newGame.setTime_to_play_in_minutes_min(newMinTimeToPlay);
         int newMaxTimeToPlay = -1;
-            while (newMaxTimeToPlay == -1) {
-                newMaxTimeToPlay = promptForInt("Maximum gameplay time (in minutes) :");
-                if (newMaxTimeToPlay < newMinTimeToPlay) {
-                    newMaxTimeToPlay = -1;
-                    System.out.println("Maximum time to play must be greater than or equal to minimum time to play.");
-                }
+        while (newMaxTimeToPlay == -1) {
+            newMaxTimeToPlay = promptForInt("Maximum gameplay time (in minutes) :");
+            if (newMaxTimeToPlay < newMinTimeToPlay) {
+                newMaxTimeToPlay = -1;
+                System.out.println("Maximum time to play must be greater than or equal to minimum time to play.");
             }
-            newGame.setTime_to_play_in_minutes_max(newMaxTimeToPlay);
+        }
+        newGame.setTime_to_play_in_minutes_max(newMaxTimeToPlay);
         int newMinPlayers = -1;
-            while (newMinPlayers == -1) {
-                newMinPlayers = promptForInt("Minimum number of players: ");
-            }
-            newGame.setMin_players(newMinPlayers);
+        while (newMinPlayers == -1) {
+            newMinPlayers = promptForInt("Minimum number of players: ");
+        }
+        newGame.setMin_players(newMinPlayers);
         int newMaxPlayers = -1;
-            while (newMaxPlayers == -1) {
-                newMaxPlayers = promptForInt("Maximum number of players: ");
-                if (newMaxPlayers < newMinPlayers) {
-                    newMaxPlayers = -1;
-                    System.out.println("Maximum number of players must be greater than or equal to minimum players.");
-                }
+        while (newMaxPlayers == -1) {
+            newMaxPlayers = promptForInt("Maximum number of players: ");
+            if (newMaxPlayers < newMinPlayers) {
+                newMaxPlayers = -1;
+                System.out.println("Maximum number of players must be greater than or equal to minimum players.");
             }
-            newGame.setMax_players(newMaxPlayers);
+        }
+        newGame.setMax_players(newMaxPlayers);
         boolean isExpansion = false;
-            String yes_or_no = promptForString("Is this game an expansion (yes/no): ").toLowerCase();
-            if (yes_or_no.equals("yes")) {
-                isExpansion = true;
-                newGame.setExpansion(isExpansion);
-            } else newGame.setExpansion(isExpansion);
+        String yes_or_no = promptForString("Is this game an expansion (yes/no): ").toLowerCase();
+        if (yes_or_no.equals("yes")) {
+            isExpansion = true;
+            newGame.setExpansion(isExpansion);
+        } else newGame.setExpansion(isExpansion);
         String newDescription = "";
-            while (newDescription == "") {
-                newDescription = promptForString("Game description: ");
-            }
-            newGame.setDescription(newDescription);
+        while (newDescription == "") {
+            newDescription = promptForString("Game description: ");
+        }
+        newGame.setDescription(newDescription);
 
         return newGame;
     }
@@ -358,56 +420,6 @@ public class BoardGameCLI {
 
     }
 
-    public List<Map.Entry<String, Integer>> bubbleSortDescending(Map<String, Integer> map) {
-        List<Map.Entry<String, Integer>> entryList = new ArrayList<>(map.entrySet());
-        int n = entryList.size();
-        for (int i = 0; i < n - 1; i++) {
-            for (int j = 0; j < n - i - 1; j++) {
-                if (entryList.get(j).getValue() < entryList.get(j + 1).getValue()) {
-                    Collections.swap(entryList, j, j + 1);
-                }
-            }
-        }
-        return entryList;
-    }
-
-
-
-    /******************
-     * Replaced Methods
-     ******************/
-
-    private void displayGameNames() {
-        // replaced displayGameNames() with displayAllGameData()
-        System.out.println("Games in your collection: ");
-        for (String name : boardGameDao.getGameNames()) {
-            System.out.println("| " + name + " |");
-        }
-    }
-
-    private void displayGameCount() {
-        // Replaced displayGameCount() with displayGameTypeCount()
-        System.out.println("Number of games: " + boardGameDao.getGameCount());
-    }
-
-    private void showSortedGames() {
-        // Replaced with the more general printGameList() method
-        BoardGame[] games = boardGameDao.sortGameNamesAscending().toArray(new BoardGame[0]);
-        String header = String.format("| %-45s | %-20s | %-6s | %-16s | %-8s | %-15s | %-14s | %-14s | %-11s | %s",
-                "Name", "Publisher", "Year", "Date Purchased", "Price", "Time to Teach", "Time to Play", "Player Count", "Game Type", "Description");
-        System.out.println(header);
-        for (int i = 0; i < games.length; i++) {
-            String expansionDetail = "";
-            if (games[0].expansion == true) {
-                expansionDetail = "Expansion";
-            } else expansionDetail = "Base Game";
-            String individualGame = String.format("| %-45s | %-20s | %-6d | %-16s | $%-7.2f | %-15s | %-14s | %-14s | %-11s | %s",
-                    games[i].getName(), games[i].getPublisher(), games[i].getYear_published(), games[i].getDate_purchased(), games[i].getPrice(),
-                    games[i].getTime_to_teach_in_minutes(), games[i].getTime_to_play_in_minutes_min() + " - " + games[i].getTime_to_play_in_minutes_max(),
-                    games[i].getMin_players() + " - " + games[i].getMax_players(), expansionDetail, games[i].getDescription());
-            System.out.println(individualGame);
-        }
-    }
 
 
     /****************************************
@@ -458,6 +470,43 @@ public class BoardGameCLI {
     private void displayError(String message) {
         System.out.println();
         System.out.println(message);
+    }
+
+
+    /******************
+     * Replaced Methods
+     ******************/
+
+    private void displayGameNames() {
+        // replaced displayGameNames() with displayAllGameData()
+        System.out.println("Games in your collection: ");
+        for (String name : boardGameDao.getGameNames()) {
+            System.out.println("| " + name + " |");
+        }
+    }
+
+    private void displayGameCount() {
+        // Replaced displayGameCount() with displayGameTypeCount()
+        System.out.println("Number of games: " + boardGameDao.getGameCount());
+    }
+
+    private void showSortedGames() {
+        // Replaced with the more general printGameList() method
+        BoardGame[] games = boardGameDao.sortGameNamesAscending().toArray(new BoardGame[0]);
+        String header = String.format("| %-45s | %-20s | %-6s | %-16s | %-8s | %-15s | %-14s | %-14s | %-11s | %s",
+                "Name", "Publisher", "Year", "Date Purchased", "Price", "Time to Teach", "Time to Play", "Player Count", "Game Type", "Description");
+        System.out.println(header);
+        for (int i = 0; i < games.length; i++) {
+            String expansionDetail = "";
+            if (games[0].expansion == true) {
+                expansionDetail = "Expansion";
+            } else expansionDetail = "Base Game";
+            String individualGame = String.format("| %-45s | %-20s | %-6d | %-16s | $%-7.2f | %-15s | %-14s | %-14s | %-11s | %s",
+                    games[i].getName(), games[i].getPublisher(), games[i].getYear_published(), games[i].getDate_purchased(), games[i].getPrice(),
+                    games[i].getTime_to_teach_in_minutes(), games[i].getTime_to_play_in_minutes_min() + " - " + games[i].getTime_to_play_in_minutes_max(),
+                    games[i].getMin_players() + " - " + games[i].getMax_players(), expansionDetail, games[i].getDescription());
+            System.out.println(individualGame);
+        }
     }
 
 }
