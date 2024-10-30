@@ -73,6 +73,8 @@ public class JdbcBoardGameDao implements BoardGameDao {
         return game;
     }
 
+
+    // todo move to new class
     @Override
     public BoardGame getRandomGame() {
         List<BoardGame> games = getBoardGames();
