@@ -1,0 +1,19 @@
+game_id,name,publisher,year_published,date_purchased,price,time_to_teach_in_minutes,time_to_play_in_minutes_min,time_to_play_in_minutes_max,min_players,max_players,expansion,description
+2,Railroad Ink Canyon Red,Horrible Guild,2021,2021-10-10,20.0,5,20,30,1,6,false,Roll and write strategy puzzle game
+3,Railroad Ink Challenge: Lush Green Edition,Horrible Guild,2021,2023-05-05,20.0,5,15,30,1,4,false,Roll and write strategy map making game
+4,Unmatched: Slings and Arrows,Restoration Games,2024,2024-06-18,50.0,10,20,40,2,4,false,Asymmetrical card fighting game with minis
+5,Unmatched: Sun's Origin,Restoration Games,2024,2024-05-10,25.0,10,20,40,2,4,false,Asymmetrical card fighting game with minis
+6,Unmatched: Cobble and Fog,Restoration Games,2020,2023-05-05,40.0,10,20,40,2,4,false,Asymmetrical card fighting game with minis
+7,Unmatched: Little Red Riding Hood vs. Beowulf,Restoration Games,2020,2024-06-18,0.0,10,20,40,2,4,false,Asymmetrical card fighting game with minis
+8,Unmatched: Battle of Legends, Volume One,Restoration Games,2019,2024-03-10,40.0,10,20,40,2,4,false,Asymmetrical card fighting game with minis
+9,Mysterium,Libellud,2015,2016-10-10,40.0,15,30,60,2,7,false,Semi-cooperative murder mystery game
+10,Onitama,Arcane Wonders,2014,2016-05-05,25.0,5,15,20,2,2,false,Tactical chess-like game with unique randomized starting moving rules
+11,Onitama: Way of the Wind,Arcane Wonders,2018,2018-06-06,20.0,5,15,20,2,2,true,Expansion to Onitama. Adds the wind spirit that moves across the board 
+12,Magic Maze,Sit Down!,2017,2018-03-03,30.0,10,10,20,1,8,false,Real-time, cooperative, randomly generated game with increasing difficulty levels. 
+13,Forbidden Desert,Gamewright,2013,2014-06-06,30.0,10,30,45,2,5,false,Cooperative game of searching a desert for treasure and making it out alive!
+14,Forbidden Island,Gamewright,2010,2011-06-06,30.0,10,30,45,2,4,false,Cooperative game to find treasure and escape!
+15,Captain Sonar,Matagot,2016,2017-02-02,50.0,15,45,60,2,8,false,Semi-cooperative, real-time submarine seek and destroy game.
+1,Senjutsu Battle for Japan,Stone Sword Games,2024,2024-08-15,40.0,30,15,20,1,4,false,Tactical card and minis game
+16,The Quest for El Dorado: Heroes & Hexes,Ravensburger,2018,2018-12-25,0.0,10,30,60,2,4,true,Expansion to Quest for El Dorado; adds new elements and a companion
+18,The Quest for El Dorado,Ravensburger,2017,1970-01-01,40.0,10,30,60,2,4,false,Race to the finish in this competitive deck building game
+19,Kodama: The Tree Spirits,Action Phase Games,2016,1970-01-01,20.0,10,30,30,2,5,false,Card game for creating bigger and better trees
