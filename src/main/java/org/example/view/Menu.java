@@ -1,8 +1,12 @@
 package org.example.view;
 
+import org.example.services.SortingService;
+
 import java.util.Scanner;
 
 public class Menu {
+
+    SortingService sortingService;
 
     private static final Scanner userInput = new Scanner(System.in);
 
@@ -126,6 +130,17 @@ public class Menu {
         System.out.println("11. Switch expansion status");
         System.out.println("12. Description");
         return userInput.nextLine();
+    }
+
+    public void sortGameMenu() {
+        System.out.println();
+        System.out.println("1. Display games by number of players");
+        System.out.println("2. Return to main menu");
+        String choice = userInput.nextLine();
+        if (choice.equals("1")) {
+            sortingService.pickNumberOfPlayers();
+            sortGameMenu();
+        } else showMainMenu();
     }
 
 }

@@ -7,8 +7,6 @@ import java.util.List;
 
 public interface BoardGameDao {
 
-    BoardGame getRandomGame();
-
     List<BoardGame> sortGameNamesAscending();
 
     List<BoardGame> sortGamesByMinTimeToPlay();
@@ -18,6 +16,7 @@ public interface BoardGameDao {
     List<BoardGame> chooseNumberOfPlayers(int count);
 
     int getGameCount();
+
     List<String> getGameNames();
 
     int getBaseGameCount();
@@ -33,7 +32,6 @@ public interface BoardGameDao {
     List<String> getPublisherListForExpansions();
 
     double getGamePrices();
-
 
     BoardGame addBoardGame(BoardGame boardGame);
 

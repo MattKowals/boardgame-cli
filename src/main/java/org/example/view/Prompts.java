@@ -9,9 +9,8 @@ import java.util.Scanner;
 
 public class Prompts {
 
-    public BoardGameDao boardGameDao;
-
     public static final Scanner userInput = new Scanner(System.in);
+
 
 
     public String promptForString(String prompt) {

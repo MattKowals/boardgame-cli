@@ -33,11 +33,14 @@ public class BoardGameCLI {
         boardGameDao = new JdbcBoardGameDao(dataSource);
         this.menu = new Menu();
         this.prompt = new Prompts();
+        this.statisticsService = new StatisticsService(boardGameDao);
+        this.sortingService = new SortingService(boardGameDao);
+        this.exportService = new ExportService(boardGameDao);
+        this.crudService = new CrudService(boardGameDao);
     }
-    
+
     public static void main(String[] args) {
 
-        // Connect to database
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setUrl("jdbc:postgresql://localhost:5432/boardgames_db");
         dataSource.setUsername("postgres");
@@ -80,14 +83,12 @@ public class BoardGameCLI {
                 System.out.println("Thanks for playing!");
                 break;
             } else if (userSelection.equals("0")) {
-                System.out.println(boardGameDao.getRandomGame().getName());
+                System.out.println(sortingService.getRandomGame().getName());
             } else if (userSelection.equals("9")) {
                 exportService.exportDatabaseToFile(exportService.promptForExportDatabase());
             }
         }
     }
-
-
 
 
 }

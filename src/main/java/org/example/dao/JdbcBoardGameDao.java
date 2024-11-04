@@ -74,17 +74,6 @@ public class JdbcBoardGameDao implements BoardGameDao {
     }
 
 
-    // todo move to new class
-    @Override
-    public BoardGame getRandomGame() {
-        List<BoardGame> games = getBoardGames();
-        Random random = new Random();
-        int index = random.nextInt(games.size());
-        BoardGame randomGame = games.get(index);
-        return randomGame;
-    }
-
-
     /*****************
      * Sorting Methods
      *****************/

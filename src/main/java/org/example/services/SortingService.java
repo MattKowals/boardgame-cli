@@ -6,11 +6,20 @@ import org.example.view.Prompts;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Random;
 
 public class SortingService {
 
+    // TODO: 11/4/2024 change name maybe?
+
     private BoardGameDao boardGameDao;
     private Prompts prompt;
+
+
+    public SortingService(BoardGameDao boardGameDao) {
+        this.boardGameDao = boardGameDao;
+        this.prompt = new Prompts();
+    }
 
     public void pickNumberOfPlayers() {
         System.out.println();
@@ -41,6 +50,14 @@ public class SortingService {
                     games[i].getMin_players() + " - " + games[i].getMax_players(), expansionDetail, games[i].getDescription());
             System.out.println(individualGame);
         }
+    }
+
+    public BoardGame getRandomGame() {
+        List<BoardGame> games = boardGameDao.getBoardGames();
+        Random random = new Random();
+        int index = random.nextInt(games.size());
+        BoardGame randomGame = games.get(index);
+        return randomGame;
     }
 
 }

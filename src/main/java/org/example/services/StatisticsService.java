@@ -8,6 +8,9 @@ public class StatisticsService {
 
     BoardGameDao boardGameDao;
 
+    public StatisticsService(BoardGameDao boardGameDao) {
+        this.boardGameDao = boardGameDao;
+    }
 
     public List<Map.Entry<String, Integer>> bubbleSortDescending(Map<String, Integer> map) {
         List<Map.Entry<String, Integer>> entryList = new ArrayList<>(map.entrySet());

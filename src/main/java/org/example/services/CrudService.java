@@ -13,6 +13,12 @@ public class CrudService {
     private Menu menu;
     private Prompts prompt;
 
+    public CrudService(BoardGameDao boardGameDao) {
+        this.boardGameDao = boardGameDao;
+        this.menu = new Menu();
+        this.prompt = new Prompts();
+    }
+
     public void addNewGame() {
         BoardGame newBoarGame = promptForNewGameData();
         newBoarGame = boardGameDao.addBoardGame(newBoarGame);

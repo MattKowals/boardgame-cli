@@ -14,6 +14,11 @@ public class ExportService {
     private BoardGameDao boardGameDao;
     private Prompts prompt;
 
+    public ExportService(BoardGameDao boardGameDao) {
+        this.boardGameDao = boardGameDao;
+        this.prompt = new Prompts();
+    }
+
     public String promptForExportDatabase() {
         String csvFileName = prompt.promptForString("What do you want to call the new file: ") + ".csv";
         return csvFileName;
